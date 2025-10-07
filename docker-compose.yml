@@ -21,7 +21,7 @@ services:
     command: |
       sh -c "
         echo 'Copying and configuring nginx configuration...'
-        cp -r /tmp/nginx-config/* /etc/nginx/conf.d/
+        cp -r /tmp/nginx-config/. /etc/nginx/conf.d/
         
         # Replace placeholders with actual values
         SERVER_NAME=\"$${HOSTNAME}.$${DOMAIN}\"
