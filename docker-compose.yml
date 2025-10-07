@@ -52,7 +52,7 @@ services:
       - ${SSL_KEY_DIR}:/etc/nginx/private:ro
       - nginx_html:/usr/share/nginx/html
       # Processed configuration from init container
-      - nginx_processed_config:/etc/nginx/conf.d:ro
+      - nginx_processed_config:/etc/nginx/conf.d
     depends_on:
       nginx_config_init:
         condition: service_completed_successfully
