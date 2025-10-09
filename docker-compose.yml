@@ -286,7 +286,7 @@ configs:
       # temporary replacement for redirect with http passthrough
       # HTTP server
       server {
-          listen 8888;
+          listen 80;
 
           server_name PLACEHOLDER_SERVER_NAME;
 
@@ -341,7 +341,7 @@ configs:
 
       # HTTPS server with SSL termination and reverse proxy
       server {
-          listen 8884 ssl;
+          listen 443 ssl;
           http2 on;
           server_name PLACEHOLDER_SERVER_NAME;
 
