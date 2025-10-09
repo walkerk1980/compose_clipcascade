@@ -63,6 +63,8 @@ services:
   clipcascade:
     image: sathvikrao/clipcascade:latest
     # No ports exposed - only accessible via nginx reverse proxy
+    ports:
+      - 8080:8080  # Internal port for ClipCascade server
     restart: always  # Automatically restart the container if it stops
     volumes:
       - config:/database  # Persistent storage for user data
