@@ -364,7 +364,7 @@ configs:
       # HTTPS server with SSL termination and reverse proxy
       server {
           listen 443 ssl;
-          http2 on;
+          # http2 on;
           server_name PLACEHOLDER_SERVER_NAME;
 
           # Gzip compression
