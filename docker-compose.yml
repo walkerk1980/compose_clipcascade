@@ -63,8 +63,6 @@ services:
   clipcascade:
     image: sathvikrao/clipcascade:latest
     # No ports exposed - only accessible via nginx reverse proxy
-    ports:
-      - 8080:8080  # Internal port for ClipCascade server
     restart: always  # Automatically restart the container if it stops
     volumes:
       - config:/database  # Persistent storage for user data
@@ -327,11 +325,13 @@ configs:
               # This is necessary to pass the correct IP to be hashed
               real_ip_header X-Real-IP;
 
+              # Rewrite all http Location headers to https
               proxy_redirect http://$$host:8884/ https://$$host:8884/;
 
               proxy_pass http://clipcascade:8080;
           }
 
+          # Dedicated WebSocket endpoint for ClipCascade
           location /clipsocket {
               proxy_set_header Host $$http_host;
               proxy_set_header X-Real-IP $$remote_addr;
@@ -355,6 +355,7 @@ configs:
 
               proxy_set_header Origin '';
 
+              # Rewrite all http Location headers to https
               proxy_redirect http://$$host:8884/ https://$$host:8884/;
 
               proxy_pass http://clipcascade:8080/clipsocket;
@@ -387,6 +388,7 @@ configs:
               proxy_pass http://clipcascade:8080/p2psignaling;
           }
 
+          # Health check endpoint
           location /health {
               proxy_set_header Host $$http_host;
               proxy_set_header X-Real-IP $$remote_addr;
