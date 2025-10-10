@@ -287,7 +287,7 @@ configs:
       # HTTP server
       server {
           listen 80;
-
+          http2 on;
           server_name PLACEHOLDER_SERVER_NAME;
 
           # Gzip compression
@@ -316,11 +316,12 @@ configs:
 
           }
 
+          # Dedicated WebSocket endpoint for ClipCascade
           location /clipsocket {
               proxy_set_header Host $$http_host;
               proxy_set_header X-Real-IP $$remote_addr;
               proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto https;
+              proxy_set_header X-Forwarded-Proto http;
               proxy_set_header X-NginX-Proxy true;
 
               # This is necessary to pass the correct IP to be hashed
@@ -338,6 +339,7 @@ configs:
               proxy_pass http://clipcascade:8080/clipsocket;
           }
 
+          # Health check endpoint
           location /health {
               proxy_set_header Host $$host;
               proxy_set_header X-Real-IP $$remote_addr;
@@ -396,7 +398,7 @@ configs:
               proxy_set_header Host $$http_host;
               proxy_set_header X-Real-IP $$remote_addr;
               proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto http;
+              proxy_set_header X-Forwarded-Proto https;
               proxy_set_header X-Forwarded-Host $$http_host;
               proxy_set_header X-Forwarded-Port 8884;
               proxy_set_header X-Forwarded-Ssl off;
