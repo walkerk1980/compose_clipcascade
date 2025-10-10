@@ -458,7 +458,7 @@ configs:
               proxy_set_header Connection "upgrade";
               proxy_set_header Origin '';
 
-              proxy_pass http://p2psignaling:8080/p2psignaling;
+              proxy_pass http://clipcascade:8080/p2psignaling;
           }
 
           # Health check endpoint
