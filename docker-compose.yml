@@ -337,6 +337,26 @@ configs:
 
               proxy_pass http://clipcascade:8080/clipsocket;
           }
+
+          location /health {
+              proxy_set_header Host $$host;
+              proxy_set_header X-Real-IP $$remote_addr;
+              proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto http;
+              proxy_set_header X-Forwarded-Ssl off;
+              proxy_set_header X-Forwarded-Port 8888;
+
+              # This is necessary to pass the correct IP to be hashed
+              real_ip_header X-Real-IP;
+
+              proxy_pass http://clipcascade:8080/health;
+          }
+
+          # Optional: Custom error pages
+          error_page 500 502 503 504 /50x.html;
+          location = /50x.html {
+              root /usr/share/nginx/html;
+          }
       }
 
       # HTTPS server with SSL termination and reverse proxy
@@ -344,6 +364,12 @@ configs:
           listen 443 ssl;
           http2 on;
           server_name PLACEHOLDER_SERVER_NAME;
+
+          # Gzip compression
+          gzip on;
+          gzip_vary on;
+          gzip_min_length 1024;
+          gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
 
           # SSL Certificate Configuration
           ssl_certificate /etc/nginx/certs/PLACEHOLDER_CERT_FILENAME;
@@ -363,11 +389,25 @@ configs:
           add_header X-XSS-Protection "1; mode=block" always;
           add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-          # Gzip compression
-          gzip on;
-          gzip_vary on;
-          gzip_min_length 1024;
-          gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+          location / {
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $$http_upgrade;
+              proxy_set_header Connection upgrade;
+              proxy_set_header Host $$http_host;
+              proxy_set_header X-Real-IP $$remote_addr;
+              proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto http;
+              proxy_set_header X-Forwarded-Host $$http_host;
+              proxy_set_header X-Forwarded-Port 8884;
+              proxy_set_header X-Forwarded-Ssl off;
+              proxy_set_header X-Url-Scheme http;
+
+              # This is necessary to pass the correct IP to be hashed
+              real_ip_header X-Real-IP;
+
+              proxy_pass http://clipcascade:8080;
+
+          }
 
           # Dedicated WebSocket endpoint for ClipCascade
           location /clipsocket {
@@ -392,37 +432,8 @@ configs:
               proxy_pass http://clipcascade:8080/clipsocket;
           }
 
-          # General WebSocket support for ClipCascade
-          location / {
-              proxy_pass http://clipcascade:8080;
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $$http_upgrade;
-              proxy_set_header Connection upgrade;
-              proxy_set_header Host $$http_host;
-              proxy_set_header X-Real-IP $$remote_addr;
-              proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto https;
-              proxy_set_header X-Forwarded-Host $$http_host;
-              proxy_set_header X-Forwarded-Port 8884;
-              proxy_set_header X-Forwarded-Ssl on;
-              proxy_set_header X-Url-Scheme https;
-
-              # This is necessary to pass the correct IP to be hashed
-              real_ip_header X-Real-IP;
-              
-              # Timeout settings for WebSocket connections
-              proxy_connect_timeout 60s;
-              proxy_send_timeout 60s;
-              proxy_read_timeout 60s;
-              
-              # Buffer settings
-              proxy_buffering off;
-              proxy_request_buffering off;
-          }
-
           # Health check endpoint
           location /health {
-              proxy_pass http://clipcascade:8080/health;
               proxy_set_header Host $$host;
               proxy_set_header X-Real-IP $$remote_addr;
               proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
@@ -432,6 +443,8 @@ configs:
 
               # This is necessary to pass the correct IP to be hashed
               real_ip_header X-Real-IP;
+
+              proxy_pass http://clipcascade:8080/health;
           }
 
           # Optional: Custom error pages
