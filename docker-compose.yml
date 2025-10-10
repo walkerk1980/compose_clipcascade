@@ -280,7 +280,7 @@ configs:
       server {
           listen 80;
           server_name PLACEHOLDER_SERVER_NAME;
-          return 301 https://$$host:8884$$request_uri permanent;
+          return 301 https://$$host:8884$$request_uri;
       }
 
       # # temporary replacement for redirect with http passthrough
